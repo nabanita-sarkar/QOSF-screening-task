@@ -56,7 +56,7 @@ def binary_to_decimal(binary):
     return int('0b' + binary, 2)
 
 
-def multiply(num1, num2):
+def multiplier(num1, num2):
     num1_bin, num2_bin = get_binary(num1, num2)
 
     n = len(num1_bin) - 1
@@ -81,7 +81,6 @@ def multiply(num1, num2):
 
     for i in range(2 * n):
         qc.measure(ab[i], cr[i])
-    qc.draw()
 
     simulator = Aer.get_backend('aer_simulator')
 
@@ -92,9 +91,22 @@ def multiply(num1, num2):
 
     output_binary = max(counts.items(), key=operator.itemgetter(1))[0]
 
-    return binary_to_decimal(output_binary)
+    return binary_to_decimal(output_binary), qc, result.time_taken
 
 
-num1 = 22
+num1 = 4
 num2 = 7
-print(multiply(num1, num2))
+
+result, qc, execution_time = multiplier(num1, num2)
+print(qc.draw('text'))
+print(f"{num1} * {num2} = {result}")
+
+print(f"Number of qubits used in the circuit : {len(qc.qubits)}")
+print(f"Depth of the circuit : {qc.depth()}")
+print(f"Time of execution : {execution_time} sec")
+print(
+    f"Limitations : Maximum number of qubits that aer_simulator supports: {Aer.get_backend('aer_simulator').configuration().to_dict()['n_qubits']}")
+
+print("\nWith few other inputs")
+print(f"16 * 16 = {multiplier(16, 16)[0]}")
+print(f"40 * 7 = {multiplier(40, 7)[0]}")
